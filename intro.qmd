@@ -1,0 +1,31 @@
+# Introducción
+
+La econometría contemporánea ha evolucionado más allá del modelo clásico de regresión lineal, abarcando una diversidad de técnicas diseñadas para abordar preguntas empíricas cada vez más complejas. Este libro de Proyección Econométrica tiene como objetivo servir de puente entre los fundamentos clásicos y las herramientas intermedias y aplicadas que hoy constituyen el núcleo de muchas investigaciones empíricas en economía, ciencias sociales, salud pública y políticas públicas.
+
+En particular, el libro se enfoca en cuatro grandes bloques temáticos que reflejan escenarios reales de análisis económico:
+
+## Modelos con Variable Dependiente Limitada
+
+Muchos fenómenos de interés no se expresan naturalmente como variables continuas y sin restricciones. Por ejemplo, las decisiones de participación laboral, la elección entre múltiples opciones educativas, o el acceso a servicios financieros, son todos ejemplos donde el uso de modelos lineales tradicionales es inadecuado. Este capítulo introduce modelos como el Logit, Probit, Tobit y multinomial, proporcionando una base conceptual y práctica para modelar variables cualitativas o censuradas.
+
+## Combinación Independiente de Cortes Transversales
+
+Ante la escasez de datos panel, los investigadores recurren a combinaciones de cortes transversales para analizar tendencias o realizar inferencias en contextos donde los datos longitudinales no están disponibles. Aquí se discuten estrategias para integrar y modelar múltiples encuestas independientes, cuidando problemas de heterogeneidad no observada y diferencias estructurales entre periodos.
+
+## Modelos con Datos de Panel
+
+Los datos de panel permiten controlar la heterogeneidad individual no observable y estudiar dinámicas temporales con mayor precisión. Este capítulo desarrolla las herramientas fundamentales para trabajar con paneles balanceados y no balanceados, introduciendo modelos de efectos fijos, efectos aleatorios y modelos dinámicos, junto con criterios de elección entre ellos.
+
+## Introducción a la Evaluación de Impacto
+
+Evaluar el efecto causal de intervenciones o políticas públicas es una tarea central en la econometría aplicada. Este capítulo ofrece una introducción a las metodologías de evaluación de impacto, como el enfoque de diferencias en diferencias (DiD), la asignación aleatoria, los modelos de regresión discontinua y las estrategias de variables instrumentales. Se enfatiza la identificación causal y la interpretación adecuada de los resultados.
+
+A lo largo del texto, se pone especial énfasis en la implementación práctica de los métodos econométricos utilizando software estadístico, análisis de datos reales y ejercicios interpretativos. Cada capítulo está diseñado para proporcionar tanto el aparato teórico como las herramientas empíricas necesarias para enfrentar problemas aplicados de proyección y análisis económico.
+
+Este libro está pensado como un recurso intermedio entre los cursos introductorios de econometría y los enfoques avanzados de inferencia causal y econometría estructural. Es ideal para estudiantes de pregrado avanzado, posgrado o profesionales interesados en fortalecer su capacidad analítica con herramientas modernas y relevantes.
+```{r}
+```
+
+
+```{r}
+```

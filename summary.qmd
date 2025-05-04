@@ -1,0 +1,3 @@
+# Resumen
+
+Este libro de Proyección Econométrica ofrece una guía intermedia-aplicada para abordar problemas empíricos más allá del modelo clásico de regresión. Está dirigido a estudiantes y profesionales que buscan aplicar técnicas como modelos con variable dependiente limitada, combinación de cortes transversales, datos de panel y evaluación de impacto. Con un enfoque práctico y apoyado en ejemplos reales en R, el texto vincula la teoría con la implementación, promoviendo una práctica econométrica rigurosa, contextualizada y comprometida con el análisis de fenómenos económicos complejos.
