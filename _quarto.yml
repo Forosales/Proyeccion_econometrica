@@ -10,6 +10,9 @@ book:
     - intro.qmd
     - summary.qmd
     - cap1.qmd
+    - cap2.qmd
+    - cap3.qmd
+    - cap4.qmd
     - references.qmd
 
 bibliography: references.bib

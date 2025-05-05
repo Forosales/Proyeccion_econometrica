@@ -1,0 +1,353 @@
+# Modelo de Dos Partes
+
+## Motivación
+
+¿Qué sucede si se concluye que el modelo Tobit es inadecuado? Existen modelos que suelen conocerse como modelos de **dos partes** o de **obstáculos**, que se pueden usar cuando Tobit es inadecuado.
+
+## Descripción general
+
+Los modelos de dos partes o de obstáculos se usan para modelar variables estrictamente positivas con una gran cantidad de valores cero $y\geq0$. En consecuencia, existe una suerte de mezcla de una distribución binomial $y=1;y=0$ y una distribución estrictamente positiva $y>0$. En este caso, nos centramos en una distribución aproximadamente continua para valores positivos, aunque, este modelo se puede usar también para datos de conteo. El código en R se puede encontrar [aquí](https://raw.githubusercontent.com/dincerti/dincerti.github.io/master/_rmd-posts/twopart.R)
+
+## Ejemplo de aplicación
+
+Recordemos el modelo
+
+$$
+\widehat{hours}=\Phi\left(\frac{\beta_0+\mathbf{X\beta}}{\sigma}\right)
+$$ Donde las variables explicativas son:
+
+-   $nwifeinc$: Salario de esposo en miles de dólares
+
+-   $educ$: años de educación
+
+-   $exper:$ años de experiencia
+
+-   $exper^2$: años de experiencia al cuadrado
+
+-   $age:$ edad de las mujeres
+
+-   $kidslt6$: Niños menores a seis años
+
+-   $kidsge6$: Niños entres 6 y 18 años
+
+```{r mroz, message=FALSE, warning=FALSE}
+
+
+pacman::p_load(wooldridge, 
+               tidyverse, 
+               twopartm, 
+               stargazer, 
+               data.table)
+data("mroz")
+#mirar la distribución de la variable hours
+
+hist(mroz$hours, 
+     probability = T,
+     main = "Histograma de hours con curva normal",
+     ylab="Densidad")
+
+lines(density(mroz$hours), 
+      col="blue",
+      lwd=2)
+```
+
+La distribución de las horas esta muy sesgada a la derecha, hay muchos valores de cero y muy pocos grandes. Esto siguiere que un modelo de dos partes podría ser apropiado para estos datos. Las horas trabajadas no siguen una distribución normal. Las distribuciones sesgadas a la derecha comunes que se podrían usar para modelar las horas trabajadas son: la distribución **lognormal** y la distribución **gamma**.
+
+Si los datos siguen una distribución logarítmica normal, entonces el registro de horas trabajadas sigue una distribución normal
+
+```{r lognormal, message=FALSE, warning=FALSE}
+
+# Transformación de la variable hours a log(hours)
+
+mroz$loghours <- ifelse(mroz$hours>0, log(mroz$hours), NA)
+
+# Miremos la distribución de loghours 428
+
+histDenNorm1 <- function (x, ...) {
+   hist(x, ...) # Histograma
+   lines(density(x), col = "blue", lwd = 2) # Densidad
+   x2 <- seq(min(x), max(x), length = 40)
+   f <- dnorm(x2, mean(x), sd(x))
+   lines(x2, f, col = "red", lwd = 2) # Normal
+   legend("topleft", c("Histograma", "Densidad", "Normal"), box.lty = 0,
+          lty = 1, col = c("black", "blue", "red"), lwd = c(1, 2, 2))
+}
+
+histDenNorm1(mroz$loghours[1:428], 
+             prob=T, 
+             main="Histograma de loghours")
+
+
+```
+
+Una vez usada la función logaritmo sobre los valores estrictamente positivos ($hours>0$) de la variable *hours*, notamos que la distribución se acerca a una distribución normal
+
+El comando del modelo de dos partes
+
+```{r comando del modelo de dos partes}
+library(twopartm)
+
+
+
+# Conjunto de variable explicativas necesarias
+
+xvars<-c("nwifeinc", "educ", "exper", "expersq", "age", "kidslt6", "kidsge6")
+
+fm <- function(y, xvars){
+  return(as.formula(paste(y, "~", paste(xvars, collapse = "+"))))
+}
+
+# Se creo una nueva base  de datos con las variables (Provisional)
+d_dospartes <- mroz %>% 
+  select(hours,nwifeinc, educ, exper, expersq, age, kidslt6, kidsge6) %>% 
+  print()
+
+mode.2p <- tpm(fm("hours", xvars),
+               data = mroz,
+               link_part1 = "logit", 
+               family_part2 = Gamma(link = "log"))
+
+summary(mode.2p)
+
+# Provisional
+mod.2P2 <- twopartm::tpm(hours~.,
+               data=d_dospartes,
+               link_part1 = "logit",
+               family_part2 = Gamma(link = "log"))
+summary(mod.2P2)
+
+```
+
+## Ajustar los modelos
+
+Para esto es necesario ajustar las variables
+
+```{r variables, message=FALSE, warning=FALSE}
+# Creando la variable dicotómica para hours
+
+mroz <- mroz %>% 
+  mutate(d_hours=ifelse(hours==0,0,1)) %>% 
+  print()
+
+```
+
+Una vez creadas las variables necesarias, se procede a generar dos subconjuntos de observaciones de forma aleatoria con el nombre **entrenamiento** y **prueba**
+
+```{r subconjuntos, message=FALSE, warning=FALSE}
+set.seed(100)
+mroz <- mroz %>% 
+  mutate(sample=sample(c("entrenamiento", "prueba"),  
+                      nrow(mroz), 
+                      replace = T)) %>% 
+  print()
+  
+```
+
+Una vez creados los subconjuntos procedemos a crear la función para los modelos de dos partes
+
+Primero los modelos binarios
+
+```{r ajustando_modelos, message=FALSE, warning=FALSE}
+# Parte 1 y=0 e y=1
+
+modelo.logistico<-glm(fm("d_hours", xvars),
+                      mroz,
+                      subset = mroz$sample=="entrenamiento",
+                      family = binomial(link = logit))
+
+modelo.probit<-glm(fm("d_hours", xvars),
+                      mroz,
+                      subset = mroz$sample=="entrenamiento",
+                      family = binomial(link = probit))
+# Mirada a la primer parte
+
+stargazer(modelo.logistico, modelo.probit,
+          type = "text")
+
+# Parte 2: ajuste de y>0
+
+modelo.MCO<-lm(fm("hours", xvars),
+               mroz,
+               subset = (mroz$hours>0 & mroz$sample=="entrenamiento"))
+
+modelo.loghours<-lm(fm("loghours", xvars),
+               mroz,
+               subset = (mroz$hours>0 & mroz$sample=="entrenamiento"))
+
+modelo.gamma<-glm(fm("hours", xvars),
+               mroz,
+               subset = (mroz$hours>0 & mroz$sample=="entrenamiento"),
+               family = Gamma(link = log))
+
+# Mirada de los modelos de la segunda parte
+
+stargazer(modelo.MCO, modelo.loghours, modelo.gamma,
+          type = "text")
+
+```
+
+Usando estos modelos podemos predecir las horas medias de $y$, dada un conjunto de covariables $\mathbf{X}$ de la siguiente forma:
+
+$$E(y|\mathbf{x})=Pr(y>0|\mathbf{x})\times E(y|y>0,\mathbf{x})[1]$$ El primer término se puede estimar usando la regresión binomial (logit o probit). El segundo término se estima si el $E(y)$ se modela directamente. Por ejemplo, en un **GLM gamma** con un enlace del registro, modelamos las horas medias trabajas.
+
+$$log(E[y])=\mathbf{x\beta} [2]$$ Donde $\beta$ es un vector de coeficientes y hemos suprimidos su dependencia de $E[y]$ en $\mathbf{x}$. Por lo tanto, podemos obtener la media de horas trabajadas simplemente exponenciando $log(E[y])$. Sin embargo, con la regresión MCO transformada de forma logarítmica se dificulta un poco más, pues estamos modelando la media de horas trabajas logarítmicas
+
+$$E[log(y)]=\mathbf{x\beta}[3]$$ Y el $E[e^{(log(Y))}\neq e^{(E[log(y)])}$. Sin embargo, podemos estimar las horas medias trabajadas si el termino de error es: $\epsilon=log(y)-\mathbf{x\beta}$, se distribuye de forma normal con varianza constante (**homocedástica**), $\sigma^2$. Luego, usando las propiedades de la distribución lognormal:
+
+$$E(y|y>0)=e^{(\mathbf{x\beta}+\sigma^2/2)} [4]$$ Con esto en mente, podemos predecir de la siguiente forma
+
+```{r predicciones, message=FALSE, warning=FALSE}
+phat<-predict(modelo.logistico,
+              mroz,
+              part=mroz$sample=="prueba",
+              type="response")
+
+phatP<-predict(modelo.probit,
+              mroz,
+              part=mroz$sample=="prueba",
+              type="response")
+
+pred <- data.table(hours=mroz$hours, muestra=mroz$sample)
+
+
+pred$MCO<-phat*predict(modelo.MCO,
+                       mroz,
+                       part=mroz$sample=="prueba")
+
+pred$MCOP<-phatP*predict(modelo.MCO,
+                       mroz,
+                       part=mroz$sample=="prueba")
+
+pred$logMCO<-phat*exp(predict(modelo.loghours,
+                       mroz))
+pred$logMCOP<-phatP*exp(predict(modelo.loghours,
+                       mroz))
+
+pred$Gamma <- phat*predict(modelo.gamma,
+                       mroz,
+                       part=mroz$sample=="prueba",
+                       type="response")
+pred$GammaP <- phatP*predict(modelo.gamma,
+                       mroz,
+                       part=mroz$sample=="prueba",
+                       type="response")
+
+pred %>% 
+  print()
+```
+
+Evaluaremos el ajuste del modelo utilizando el error cuadrático medio (RMSE). El RMSE es simplemente la raíz cuadrado del error cuadrado medio (MPE), que tiene una buena interpretación porque puede descomponerse en la suma de la varianza y el sesgo al cuadrado de la predicción
+
+```{r RMSE, message=FALSE, warning=FALSE}
+RMSE<-function(x,y) sqrt(mean((y-x)^2, na.rm=T))
+
+rmse<-c(round(RMSE(pred$hours, pred$MCO),digits = 2),
+        round(RMSE(pred$hours, pred$logMCO),digits = 2),
+        round(RMSE(pred$hours, pred$Gamma), digits = 2),
+        round(RMSE(pred$hours, pred$MCOP), digits = 2),
+        round(RMSE(pred$hours, pred$logMCOP), digits = 2),
+        round(RMSE(pred$hours, pred$GammaP), digits = 2))
+
+names(rmse)<-c("MCO", "Log-MCO", "Gamma", "MCOP", "Log-MCOP", "GammaP")
+
+print(rmse)
+
+```
+
+El modelo **logarítmico MCO** funciona peor, debido al problema de la retransformación. Los modelos **MCO** y **Gamma** producen resultados similares y el modelo MCO en realidad funciona mejor. Esto muestra que MCO es un estimador razonable de la expectativa condicional incluso cuando los errores claramente no están distribuidos normalmente.
+
+La principal dificultad con los MCO transformados logarítmicamente es que la retransformación no es válida si los errores no se distribuyen normalmente con una varianza constante. Sin embargo, el supuesto de normalidad, los horas trabajadas esperadas están dadas por:
+
+$$E[y|y>0]=exp(\mathbf{x\beta})\times E[exp(\epsilon)|\mathbf{x}][5]$$
+
+## Simulación Predictiva
+
+Nos hemos centrado en estimar las horas medias trabajas, por lo que la distribución del término de error no ha sido tan importante. En otros casos, podríamos querer construir intervalos de predicción o simular la distribución completa de las horas trabajadas para una nueva población.
+
+Aquí usaremos la simulación para comparar las predicciones de los modelos con los datos observados. [Andrew Gelman y Jennifer Hill](http://www.stat.columbia.edu/~gelman/arm/) se refieren a este tipo de simulación como simulación predictiva.
+
+Consideraremos seis modelos de dos partes para las horas de trabajo femenino: un modelo logístico-normal, un modelo logístico-lognormal y un modelo logístico-gamma, mas los tres para Probit. Para los modelos normal y lognormal supondremos que el término de error es constante entre los individuos. Tanto la distribución lognormal como la gamma tienen la propiedad deseable de que la varianza es proporcional al cuadrado de la media.
+
+Comencemos simulando datos del modelo logístico-normal
+
+```{r predic_log_normal}
+n<-nrow(mroz)
+
+d <- rbinom(n,1,phat)
+
+y.norm<-d*rnorm(n,
+                pred$MCO,
+                summary(modelo.MCO)$sigma)
+```
+
+Usamos un procedimiento de simulación similar para el modelo logístico-lognormal
+
+```{r pred_logit_lognormal}
+y.lognormal<-d*rlnorm(n,
+                pred$logMCO,
+                summary(modelo.loghours)$sigma)
+```
+
+Para simular datos de una distribución gamma, es necesario estimar un parámetro de forma, $a_i$, y un parámetro de tasa, $b_i$, para cada mujer. Supondremos que el parámetro de forma es constante en todas las observaciones, lo que implica que $E(Y_i)=\mu_i=a/b_i$. R usa métodos de momentos para estimar el parámetro de dispersión, que es el inverso del parámetro de forma, en un GLM gamma. Mediante programación, divide la suma de los residuos de "trabajo" al cuadrado por el número de grados de libertad en el modelo.
+
+```{r pronostico_Gamma}
+res <- modelo.gamma$residuals
+
+c(sum(res^2/modelo.gamma$df.residual), summary(modelo.gamma)$dispersion)
+```
+
+Preferiríamos estimar el parámetro de forma utilizando la máxima verosimilitud. Podemos hacer esto usando la función *gamma.shape* del paquete MASS. Con el parámetro de forma en la mano, podemos estimar el parámetro de tasa como $\widehat{b}_i=\widehat{a}/\widehat{\mu}_i$ donde $\widehat{\mu}_i$ es la media predicha para la mujer $i$. Con estas estimaciones de máxima verosimilitud, podemos simular las horas usando el modelo logístico-gamma.
+
+```{r prediccion_gamma}
+library(MASS)
+a<-gamma.shape(modelo.gamma)$alpha
+
+b<-a/pred$Gamma
+
+y.gamma<-d*rgamma(n, shape = a, rate = b)
+```
+
+Ahora miremos que tan bien se ajustan nuestros modelos a datos observados
+
+```{r ajuste}
+y<-mroz$hours
+
+p.hat<-data.table(y=c(y, y.norm, y.lognormal, y.gamma),
+                  lab=c(rep("Observ
+                            
+                            ado",n), 
+                        rep("Normal",n),
+                        rep("lognormal",n),
+                        rep("Gamma",n)))
+ggplot(p.hat[p.hat$y>0 & p.hat$y<10000], aes(x=y, col=lab))+
+  geom_density(kernel="gaussian")+
+  xlab("Horas")+
+  ylab("Densidad")+
+  theme(legend.position = "bottom")+
+  labs(col="")+
+  scale_color_manual(values = c(Observado="black",
+                                Normal="red",
+                                Lognormal="blue",
+                                Gamma="green"))
+
+```
+
+Como era de esperar el modelo logit-normal funciona cercanamente bien, junto con gamma, pero el modelo que ajusta de forma terribel es lognormal no aparece
+
+También podemos comparar los cuartiles de las distribuciones simuladas con el cuartil de los datos observados
+
+```{r}
+MySum <- function(x){
+  q <- c(.30, .5, .75, .9, .95, .98)
+  dat <- c(100 * mean(x == 0, na.rm = TRUE),
+           min(x, na.rm = TRUE), quantile(x, probs = q, na.rm = TRUE), 
+           max(x, na.rm = TRUE))
+  names(dat) <- c("Porcentaje_Cero", "Min", paste0("Q", 100 * q), "Max")
+  return(round(dat, 0))
+} 
+sumstats <- rbind(MySum(y), MySum(y.norm), 
+                  MySum(y.lognormal), MySum(y.gamma))
+rownames(sumstats) <- c("Observado", "Normal", "Lognormal", "Gamma")
+print(sumstats)
+```
+

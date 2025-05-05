@@ -1,0 +1,467 @@
+# Modelo Poisson
+
+## Introducción y motivación
+
+Una tercera clase de variable dependiente no negativa es una **variable de conteo**, que puede asumir valores enteros no negativos: $[0,1,2,...]$, específicamente los que nos interesa son los casos en los que $y$ asume pocos valores, incluido el cero. Ejemplos:
+
+-   El número de medallas que puede obtener un deportista en una olimpiada,
+
+-   El número de hijos que tiene una mujer
+
+-   El número de publicaciones al año de un científico
+
+Al igual que las respuestas, binaria y Tobit, un modelo lineal para $E(y|x_1,x_2,...,x_k)$, quizá no proporciona el mejor ajuste a lo largo de todos los valores de las variables explicativas. Sin embargo, es informativo comenzar con un modelo lineal.
+
+Como en un modelo **Tobit** no se puede obtener el logaritmo de una variable de conteo que asume valores de cero. Un método útil es modelar el valor esperado como una función exponencial:
+
+$$E(y|x_1,x_2,...,x_k)=exp(\beta_0+\beta_1x_1+...+\beta_kx_k)\ [1]$$
+
+```{r}
+pacman::p_load(wooldridge, 
+               stargazer, 
+               tidyverse)
+```
+
+### Recordatorio
+
+```{r no-lineal}
+data("wage1", package = "wooldridge")
+
+#Modelo lineal
+
+salario.lm<-lm(wage~educ,
+               wage1)
+
+library(stargazer)
+
+stargazer(salario.lm, 
+          type = "text")
+
+# Gráfica de la relación salario y la educación
+
+plot(wage~educ, 
+     wage1,
+     pch=20,
+     col="steelblue",
+     ylab = "Salario en USD por hora",
+     xlab="años de educación",
+     main="La relación entre el salario y la educación")
+
+abline(0,0)
+
+abline(salario.lm, 
+       lw=2,
+       col="red")
+
+```
+
+```{r}
+plot(y=wage1$wage,
+     x=wage1$educ,
+     col="blue",
+     pch=19,
+     xlab="Años de educación",
+     ylab="Salario en USD/hora")
+```
+
+**Interpretaciones**
+
+-   Un aumento de un año de educación, esta asociado en promedio a un incremento en el salario de 54 centavos por cada trabajada.
+
+Es decir que la forma funcional al parecer, es la siguiente:
+
+$$wage=exp(\beta_0+\beta_1educ+u)\ [2]$$
+
+La ecuación \[2\] no es lineal en los parámetros, para usar el modelo de regresión se usa un cambio usando la función logarítmica, tenemos:
+
+$$log(wage)=\beta_0+\beta_1educ+u$$
+
+```{r log-lin}
+log.lin<-lm(log(wage)~educ,
+            wage1)
+stargazer(log.lin, 
+          type = "text")
+```
+
+**Intepretación**
+
+```{r}
+exp(coef(log.lin)[1])
+```
+
+-   $e^{0.584}=1.79$ Si no hay cambios en la educación, se predice un ingreso promedio por hora trabajada de 1.79 USD
+
+-   Un aumento de un año en la educación esta asociado a un incremento de 8.3% en el salario por hora trabajada
+
+```{r grafica}
+# Gráfica de la relación salario y la educación
+
+plot(log(wage)~educ, 
+     wage1,
+     pch=20,
+     col="steelblue",
+     ylab = "Salario en USD por hora",
+     xlab="años de educación",
+     main="La relación entre el salario y la educación")
+
+
+abline(log.lin,
+       lw=2,
+       col="green")
+
+abline(salario.lm,
+       col="red",
+       lwd=2)
+
+abline(0,0)
+```
+
+### Otro ejemplo
+
+```{r}
+data("CASchools", package = "AER")
+
+CASchools$Notas<-(CASchools$read+CASchools$math)/2
+
+lineal.model<-lm(Notas~income,
+                 CASchools)
+lineal.log<-lm(Notas~log(income),
+               CASchools)
+
+plot(Notas~income,
+     CASchools,
+     col="steelblue",
+     pch=20,
+     main="Linea de regresión Notas-ingreso")
+
+order_id2<-order(CASchools$income)
+
+lines(CASchools$income[order_id2],
+      fitted(lineal.log)[order_id2],
+      col="green", 
+      lwd=2)
+abline(lineal.model,
+       col="red",
+       lwd=2)
+
+```
+
+Volviendo a la ecuación \[1\], debido a que $exp(.)$ siempre es positivo. \[1\] asegura que los valores predichos para $y$ también sean positivos. Aunque \[1\] es más complicada que un modelo lineal, básicamente ya se sabe como interpretar los coeficientes, al obtener el logaritmo de la ecuación \[1\]
+
+$$log[E(y|x_1,...,x_k)]=\beta_0+\beta_1x_1+...+\beta_kx_k\ [2]$$ es decir, que el logaritmo del valor esperado es lineal. Por lo tanto, mediante las propiedades de la aproximación de la función logaritmo tenemos:
+
+$$\%\Delta E(y|\mathbf{x})\approx(100\beta_j)\Delta x_j[3]$$ Es decir, $100\beta_j$ es el cambio porcentual en $E(y|\mathbf{x})$, dado un incremento de una unidad en $x_j$. A veces, es necesaria una estimación más precisa y es fácil de encontrar una, al observar los cambios discretos en el valor esperado. Manteniendo todas la variables explicativas fijas, excepto $x_j$ y, sea $x_k^0$ el valor inicial y $x_k^1$ el valor siguiente. Entonces, el cambio proporcional en el valor esperado es:
+
+$$[exp(\beta_o+\mathbf{x_{k-1}\beta_{k-1}}+\beta_kx_k^1)/exp(\beta_o+\mathbf{x_{k-1}\beta_{k-1}}+\beta_kx_k^0)]-1=exp(\beta_k\Delta{x_k})-1\ [4]$$
+
+Donde: $\mathbf{x_{k-1}\beta_{k-1}}$ es una abreviatura de $\beta_1x_1+..+\beta_{k-1}x_{k-1}$ y, $\Delta{x_k}=x_k^1-x_k^0$. Cuando $\Delta{x_k}=1$, la variable $x_k$ es binaria que se cambia de cero a uno, entonces el cambio es $exp(\beta_k)-1$. Dada $\widehat{\beta}_k$, se obtiene $exp(\widehat{\beta}_k)-1$ y se multiplica por el 100 para transformar el cambio proporcional en un cambio porcentual.
+
+Si por ejemplo $x_j=log(z_j)$ para alguna variable $z_j>0$, entonces su coeficiente $\beta_j$ se interpreta como una elasticidad respecto a $z_j$
+
+Debido a que \[1\] es no lineal en sus parámetros, no se puede usar métodos de regresión lineal. Entonces usamos la **estimación máxima verosimilitud (EMV)** y también el método relacionado a la **estimación de cuasi máxima verosimilitud (ECMV)**
+
+A lo largo de los cursos de econometría se ha presentado la normalidad como el supuesto de distribución estándar para regresión lineal. Este supuesto no puede usarse en una variable de conteo (pues la distribución normal es para variables continuas que asuman todos los valores) que asume sólo pocos valores, la distribución será muy distinta a la normal. En su lugar, la distribución nominal para los datos de conteo es la **distribución Poisson**
+
+Como nos interesa el efecto de las variables explicativas sobre $y$, se debe observar la distribución de Poisson condicional a $\mathbf{x}$. La distribución Poisson está determinada por completo por su media, así sólo se necesita especificar $E(y|\mathbf{x})$, esta tiene la misma forma de \[1\] que se abrevia $exp(\mathbf{x\beta})$. Entonces, la probabilidad de que $y$ será igual al valor $h$, condicional sobre $\mathbf{x}$, es:
+
+$$P(y=h|\mathbf{x})=exp[-exp(\mathbf{x\beta})][exp(\mathbf{x\beta})]^h/h!, h=0,1,...\ [5]$$ Donde $h!$ denota el factorial. Esta distribución, que es la base del **modelo de regresión de Poisson**, permite hallar las probabilidades condicionales para cualquier valor de variables explicativas. Por ejemplo, $P(y=0|\mathbf{x})=exp[-exp(\mathbf{x\beta})]$. Una vez que se tienen las estimaciones de $\beta_j$, se pueden insertar en las probabilidades para diferentes valores $\mathbf{x}$.
+
+Dada una muestras aleatoria $[(\mathbf{x_i},y_i):i=1,2,...,n]$, se puede construir la función **log-verosimilitud**:
+
+$$\mathcal{L(\beta)}=\Sigma_{i=1}^n\mathcal{l_i(\beta)}=\Sigma_{i=1}^n[y_i\mathbf{x_i\beta}-exp(\mathbf{x_i\beta})]\ [6]$$ Se desecha el término $log(y_i!)$. Esta función se maximiza usando EMV, aunque la EMV de Poisson no es cerrada.
+
+Igual que los modelo logit, probit y Tobit, no se pueden comparar directamente las magnitudes de las estimaciones del Poisson de una función exponencial con las estimaciones de MCO. se hace comparables de la siguiente forma:
+
+#### Variables explicativas continuas
+
+Se aplica el efecto parcial de $x_j$ respecto a $E(y|x_1,x_2,..,x_k)$:
+
+$$\frac{\partial E(y|x_1,x_2,..,x_k)}{\partial x_j}=exp(\beta_0+\beta_1x_1+...+\beta_kx_k)\times \beta_j [7]$$ Es interesante el factor escalar **EPP**:
+
+$$n^{-1}\Sigma_{i=1}^nexp(\hat{\beta}_0+\hat{\beta}_1x_1+...+\hat{\beta}_kx_k)=n^{-1}\Sigma_{i=1}^n\hat{y}_i [8]$$
+
+es simplemente el promedio muestral $\bar{y}$ de $y_i$ donde se definen los valores ajustados como $\widehat{y}_i=exp(\hat{\beta}_0+\mathbf{x_i\hat{\beta}})$. Es decir, para la regresión Poisson con una función media exponencial, el promedio de los valores ajustados es el mismo que el promedio de los resultados originales de $y_t$, tal como el caso de regresión lineal. Esto simplifica el escalar de las estimaciones Poisson $\widehat{\beta}_j$, para hacerlas comparables a las estimaciones MCO, $\widehat{\gamma}_j$ para una variable explicativa continua, se puede comparar con $\widehat{\gamma}_j$ con $\bar{y}.\widehat{\beta}_{j}$
+
+Aunque el análisis de EMV de Poisson es un primer paso para los datos de conteo, suele ser muy restrictivo. Todas las probabilidades y los momentos mayores de la distribución Poisson se determinan por completo por la media. Por ejemplo, la varianza es igual a la media:
+
+$$Var(y|\mathbf{x})=E(y|\mathbf{x})\hspace{0.5cm} [9]$$ Esto es restrictivo y se viola en muchas aplicaciones. Por fortuna, la distribución de Poisson tiene una propiedad de robustez muy buena, es decir, que se mantenga o no la distribución de Poisson, se obtienen estimadores asistóticamente normales y consistentes con las $\beta_j$
+
+Cuando se EMV de Poisson, pero no se supone que la distribución de Poisson sea correcta, este análisis recibe el nombre de **Estimación de cuasi máxima verosimilitud (ECMV)**. LA ECMV de Poisson es muy útil debido a que esta programada en muchos paquetes econométricos. Sin embargo, a menos que el supuesto de varianza de Poisson \[9\] se mantenga, se deben ajustar los errores estándar, de la siguiente forma:
+
+El ajuste a los errores estándar está disponible cuando se supone que la varianza es proporcional a la media:
+
+$$Var(y|\mathbf{x})=\sigma^2E(y|\mathbf{x})\ [10]$$ Donde: $\sigma^2$ es un parámetro desconocido.
+
+-   Cuando $\sigma^2=1$ se obtiene el supuesto de varianza de Poisson \[9\]
+
+-   Si $\sigma^2>1$ la varianza es mayor que la media para toda $\mathbf{x}$, esto se llama **sobredispersión** común en regresiones de conteo.
+
+    -   Si $\sigma^2<1$ la varianza es menor que la media para toda $\mathbf{x}$, esto se llama **subdispersión** es poco común.
+
+Bajo \[10\] es fácil ajustar los errores estándar de la EMV de Poisson. Si $\hat{\beta}_j$ denota la ECMV de Poisson y se definen los residuales como $\hat{u}_i=y_i-\hat{y}_i$, donde $\hat{y}_i=exp(\hat{\beta}_0+\hat{\beta}_1x_{i1}+...+\hat{\beta}_kx_{ik})$. Un estimador consistente de $\sigma^2=(n-k-1)^{-1}\sum_{i=1}^n\frac{\hat{u}_i^2}{\hat{y}_i}$, donde la división entre $\hat{y}_i$ es el ajuste apropiado de heterocedasticidad y $n-k-1=gl$ dadas las $n$ observaciones y $k+1$ estimadores $\hat{\beta}_0,\hat{\beta}_1,...,\hat{\beta}_k$. Si $\sigma=\sqrt{\sigma^2}$, se multiplican los errores estándar Poisson usuales por $\hat{\sigma}$. Si $\hat{\sigma}$ es notablemente mayor que uno, los errores estándar corregidos pueden ser mucho mayores que los errores estándar nominales, generalmente son incorrectos, de la EMV de Poisson.
+
+Bajo el supuesto de distribución de Poisson, se puede usar el estadístico de la razón de verosimilitudes para probar las restricciones de exclusión, que siempre, tienen la forma de $RV=2(l_{nr}-L_r)$. Si se tiene $q$ restricciones de exclusión, el estadístico se distribuye aproximadamente con $\chi^2_q$ bajo la hipótesis nula. Bajo el supuesto menos restrictivo de \[10\], un simple ajuste está disponible si se divide $RV=2(l_{nr}-L_r)$ entre $\sigma^2$ donde $\sigma^2$ se obtiene del modelo no restringido.
+
+## Ejemplo \[Regresión de Poisson para número de arrestos\]
+
+La base de datos **crime1** contiene información sobre arrestos durante 1986 y otros datos, sobre 2725 hombres nacidos en California en 1960 o 1961. Cada hombre de la muestra fue arrestado al menos una vez antes 1986.
+
+Las variables:
+
+-   **narr86**: indica el número de veces que un hombre fue arrestado durante 1986: esta variable es cero para la mayoría de los hombres de la muestra (72.29%) y varía desde 0 hasta 12. (El porcentaje de hombres detenidos una sola vez durante 1986 es 20.51%)
+
+```{r verificar}
+#| label: Cargar librerías y datos
+
+pacman::p_load(wooldridge, 
+               tidyverse)
+
+data("crime1")
+
+crime1 %>% 
+str()
+
+# Tabla de porcentaje
+crime1 %>% 
+  with(table(narr86)) %>% 
+  prop.table() %>% 
+  round(digits = 2) %>% 
+  print()
+
+```
+
+-   **pcnv**: Es la proporción (no el porcentaje) de detenciones anteriores a 1986 que condujeron a una condena (?)
+
+```{r}
+crime1 %>% 
+  with(table(pcnv)) %>% 
+  round(digits = 2) %>% 
+  print()
+```
+
+-   **avgsen** es la duración promedio de las condenas anteriores cumplidas (cero para la mayoría de casos)
+
+```{r}
+crime1 %>% 
+  with(table(avgsen)) %>% 
+  print()
+```
+
+-   **tottime**: tiempo en prisión desde los 18 años (meses)
+
+```{r}
+crime1 %>% 
+  with(table(tottime)) %>% 
+  print()
+```
+
+-   **ptime86**: es el tiempo en meses que se ha pasado en prisión durante 1986
+
+```{r}
+crime1 %>% 
+  with(table(ptime86)) %>% 
+  print()
+```
+
+-   **qemp86**: es la cantidad de trimestres que la persona tuvo empleo en 1986 (de cero a cuatro)
+
+```{r}
+crime1 %>% 
+  with(table(qemp86)) %>% 
+  print()
+```
+
+-   **ince86**: ingresos legales, 1986, \$100s
+
+-   **black** 1 si es negro, cero otro caso
+
+-   **hispan** 1 si es hispano, cero otro caso
+
+-   **born60** 1 nacido en 1960, cero otro caso
+
+#### Modelo de regresión Poisson
+
+$$
+\begin{aligned}
+E[narr86|\mathbf{x}]=exp\left(\beta_0+\beta_1pcnv+\beta_2avgsen+\beta_3tottime\\
++\beta_4ptime86+\beta_5qemp86+\beta_6ince86+\\
++\delta_1black+\delta_2hispan+\delta_3born\right)
+\end{aligned}
+$$
+
+```{r ajuste, message=FALSE, warning=FALSE}
+# Comprobar la variable de conteo
+
+crime1 %>% 
+  with(table(narr86)) %>% 
+  print()
+
+# Graficar la variable
+ggplot(crime1, aes(x = narr86)) + 
+  geom_histogram(binwidth = 0.5, 
+                 color = "black", 
+                 fill = "skyblue",
+                 alpha = 0.5) + 
+  geom_density(alpha = 0.5, 
+               color = "red") + 
+  labs(title = "Histograma con densidad de kernel del número de arrestos", 
+       x = "Valor", y = "Frecuencia") + 
+  theme_classic()
+
+```
+
+Ajustar el modelo usando MCO
+
+```{r MCO, message=FALSE, warning=FALSE}
+narr86.MCO <- lm(narr86~
+                   pcnv+
+                   avgsen+
+                   tottime+
+                   ptime86+
+                   qemp86+
+                   inc86+
+                   black+
+                   hispan+
+                   I(hispan*black)+
+                   born60,
+                 crime1)
+
+narr86.MCO2 <- lm(narr86~
+                   hispan,
+                 crime1)
+
+library(stargazer)
+stargazer(narr86.MCO, narr86.MCO2,type = "text")
+```
+
+El modelo MCO supone que la variable $y$ es cuantitativa aproximadamente continua, tenemos una variable de conteo
+
+```{r verificacion}
+summary(narr86.MCO$fitted.values)
+```
+
+No esta ajustando bien, pues arroja valores ajustados negativos el modelo MCO, recordar que la variable $y$ es de conteo y comienza en cero y termina en 12
+
+**Ajuste con el modelo Poisson**
+
+```{r poisson}
+narr86.poisson <- glm(narr86~
+                   pcnv+
+                   avgsen+
+                   tottime+
+                   ptime86+
+                   qemp86+
+                   inc86+
+                   black+
+                   hispan+
+                   born60,
+                 crime1,
+                 family = poisson(link = "log"))
+
+# Comparo el modelo Possion y MCO
+
+stargazer(narr86.MCO, narr86.poisson, 
+          type = "text",
+          df=F,
+          digits = 3,
+          title = "Tabla 1. Determinantes del número de arrestos de hombres jóvenes",
+          dep.var.caption = "Variable dependiente: Número de arrestos",
+          header = F,
+          column.labels = c("MCO", "Poisson"),
+          model.names = F,
+          report = "vct*")
+
+mean(crime1$narr86)
+```
+
+Es común en los modelos **Poisson** que exista un mal cálculo de los errores estándar, pues puede haber sobre o sub dispersión de la varianza de acuerdo a la ecuación \[10\]
+
+### Estimación de $\sigma^2$
+
+Recordemos la ecuación:
+
+$$\sigma^2=(n-k-1)^{-1}\Sigma_{i=1}^n\frac{\widehat{u}_i^2}{\widehat{y}_i} [11]$$ También recordar la ecuación para los residuales
+
+$$\widehat{u}_i=y_i-\widehat{y}_i [12]$$
+
+```{r}
+residuales <- narr86.poisson$y- narr86.poisson$fitted.values
+
+sigma2<-(sum(residuales^2/narr86.poisson$fitted.values))/narr86.MCO[["df.residual"]]
+sigma2
+
+raiz.sigma <- sqrt(sigma2)
+raiz.sigma
+
+```
+
+Comprobamos que en este caso $\widehat{\sigma}^2\approx1.52>1$, entonces existe **sobredispersión** por lo que no se cumple la \[9\] $Var(y|\mathbf{X})=E(y|\mathbf{X})$. Por lo tanto, se esta analizando con la **ECMV**
+
+### Ajustar los errores estándar
+
+```{r ajuste_ERS, message=FALSE, warning=FALSE}
+library(sandwich)
+ees.ajustados<-list(sqrt(diag(vcovHC(narr86.MCO, type = "HC1"))),
+                    raiz.sigma*sqrt(diag(vcovHC(narr86.poisson, type = "HC1"))))
+
+stargazer(narr86.MCO, narr86.poisson, 
+          type = "text",
+          df=F,
+          digits = 3,
+          title = "Tabla 2. Determinantes del número de arrestos de hombres jóvenes (ESHRA)",
+          dep.var.caption = "Variable dependiente: Número de arrestos",
+          header = F,
+          column.labels = c("Lineal MCO", "Exponecial ECMV-Poisson"),
+          model.names = F,
+          se=ees.ajustados)
+```
+
+### Interpretación
+
+Como se puede ver en la Tabla 2 los errores estándar MCO y Poisson son heterocedasticos-robustos. Los errores estándar de Poisson han sido multiplicados por el valor de sigma $\widehat\sigma=1.232$, lo cual incide sobre la prueba $t$ y por ende en su significancia estadística.
+
+Los coeficientes del MCO y Poisson no son comparables directamente y tienen significados muy diferentes. Por ejemplo, el coeficiente de *pcnv* implica que, si $\vartriangle{pcnv}=0.10$ el número esperado de arrestos deciende en 0.013 ($0.10\times0.132\approx0.013$) (*pcnv* es la proporcion de arrestos previos que desembocaron en una condena). El coeficiente de Poisson implica que $\Delta{pcnv}=0.10$ reduce los arresto en cerca de 4% $[0.402\times0.10\approx 0.0402]$ y se multiplica esto por el 100% para obtener el efecto porcentual. Como cuestión de políticas, esto siguiere que se pueden reducir los arrestos generales en 4% si se incremente la probabilidad de condena en 0.10.
+
+El coeficiente de Poisson de **black** implica que, *ceteris paribus*, el número esperado de arrestos para los hombres negros se estima cerca de $100\times[exp(0.661)-1]\approx93.7$, es decir que la probabilidad de arrestos para los hombres negros es 93.7% mayor que para los hombres blancos con los mismos valores de las variables explicativas.
+
+```{r hispan, message=FALSE, warning=FALSE}
+hispan<-(exp(coef(narr86.poisson)[9])-1)*100
+hispan
+```
+
+El coeficiente de Poisson de **hispan** implica que, *ceteris paribus*, el número esperado de arrestos para los hombres hispanos se estima cerca de $100\times[exp(0.5)-1]\approx 64.84$, es decir que la probabilidad de arrestos para los hombres hispanos es 64.87% mayor que para los hombres no hispanos con los mismos valores de las variables explicativas.
+
+### Efectos marginales de la Regresión Exponencial EMCV-Poisson
+
+```{r MFX, message=FALSE, warning=FALSE}
+library(mfx)
+poissonmfx(narr86~
+                  pcnv+
+                  avgsen+
+                  tottime+
+                  ptime86+
+                  qemp86+
+                  inc86+
+                  black+
+                  hispan+
+                  born60,
+               crime1)
+```
+
+### Interpretaciones:
+
+-   Como se puede observar los efectos marginales de Poisson ya son comparables a los coeficientes de MCO, de tal manera que, el **EPP** de Poisson para la variables **pcnv** es igual al coeficiente de MCO, es decir ambos son de **-0.13** aproximadamente. Donde existe diferencias marcadas entre el **EPP** y coeficiente de MCO es en **black** y en **hispan**. De la misma manera que se hizo en las interpretaciones de la Tabla 2 se debe aproximar mejor el efecto parcial de las variables binarias usando la ecuación \[4\]. Por ejemplo para **black**:
+
+```{r black-EPP, message=FALSE, warning=FALSE}
+black.epp <-100*(exp(0.27712004)-1)
+black.epp
+
+```
+
+El coeficiente de Poisson de **black** de los efectos marginales implica que, *ceteris paribus*, el número esperado de arrestos para los hombres negros se estima cerca de $100\times[exp(0.2771)-1]\approx31.93$, es decir que el porcentaje de arrestos para los hombres negros es 31.93% mayor que para los hombres blancos con los mismos valores de las variables explicativas.
+
+```{r}
+hispan.epp <-100*(exp(0.19144813)-1)
+hispan.epp
+```
+

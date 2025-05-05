@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Modelo Tobit – Guía de Proyeccion Econométrica</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cap3.html" rel="next">
+<link href="./cap1.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cap2.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Modelo Tobit</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Guía de Proyeccion Econométrica</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introducción</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Resumen</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Variable dependiente binaria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap2.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Modelo Tobit</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Modelo Poisson</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Modelo de Dos Partes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#motivación" id="toc-motivación" class="nav-link active" data-scroll-target="#motivación"><span class="header-section-number">4.1</span> Motivación</a></li>
+  <li><a href="#especificación-matemática" id="toc-especificación-matemática" class="nav-link" data-scroll-target="#especificación-matemática"><span class="header-section-number">4.2</span> Especificación matemática</a></li>
+  <li><a href="#interpretaciones-de-las-estimaciones-tobit." id="toc-interpretaciones-de-las-estimaciones-tobit." class="nav-link" data-scroll-target="#interpretaciones-de-las-estimaciones-tobit."><span class="header-section-number">4.3</span> Interpretaciones de las estimaciones Tobit.</a></li>
+  <li><a href="#ejemplo" id="toc-ejemplo" class="nav-link" data-scroll-target="#ejemplo"><span class="header-section-number">4.4</span> Ejemplo</a>
+  <ul class="collapse">
+  <li><a href="#verificar-que-la-variable-dependiente-sea-de-solución-de-esquina" id="toc-verificar-que-la-variable-dependiente-sea-de-solución-de-esquina" class="nav-link" data-scroll-target="#verificar-que-la-variable-dependiente-sea-de-solución-de-esquina"><span class="header-section-number">4.4.1</span> Verificar que la variable dependiente sea de solución de esquina</a></li>
+  <li><a href="#usando-mco" id="toc-usando-mco" class="nav-link" data-scroll-target="#usando-mco"><span class="header-section-number">4.4.2</span> Usando MCO</a></li>
+  <li><a href="#modelo-tobit" id="toc-modelo-tobit" class="nav-link" data-scroll-target="#modelo-tobit"><span class="header-section-number">4.4.3</span> Modelo Tobit</a></li>
+  <li><a href="#no-linealidad-del-modelo-tobit" id="toc-no-linealidad-del-modelo-tobit" class="nav-link" data-scroll-target="#no-linealidad-del-modelo-tobit"><span class="header-section-number">4.4.4</span> No linealidad del modelo Tobit</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Modelo Tobit</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="motivación" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="motivación"><span class="header-section-number">4.1</span> Motivación</h2>
+<p>Otro tipo de variable dependiente limitada es una de respuesta de solución de esquina. La variable dependiente es cero para una fracción no trivial <em>representativa</em>, pero también existen valores de una distribución <strong>aproximadamente continua</strong> a través de valores positivos. Por ejemplo, el salario, habrá algunos individuos que ganen cero dólares por hora y otros que ganen valores aproximadamente continuos. Otro ejemplo, la cantidad que el individuo gasta en alcohol cada mes. Esta variable asume un amplio rango de valores en personas mayores a los 18 años.</p>
+</section>
+<section id="especificación-matemática" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="especificación-matemática"><span class="header-section-number">4.2</span> Especificación matemática</h2>
+<p>Sea <span class="math inline">\(y\)</span> una variable que asume datos aproximadamente continuos en valores estrictamente positivos, pero que asume cero con probabilidad positiva. En este caso se podría usar un modelo lineal para <span class="math inline">\(y\)</span>. De hecho, un modelo lineal podría ser una buena aproximación a <span class="math inline">\(E(y|x_1,x_2,...,x_k)\)</span> en especial para <span class="math inline">\(x_j\)</span> cerca de los valores promedio. Nuevamente, obtendríamos valores ajustado negativos, lo que generaría predicciones negativas para <span class="math inline">\(y\)</span>, es decir, problemas análogos a los del MPL. También el supuesto de que una variable explicativa que aparece en la forma de nivel tiene un efecto parcial constante sobre <span class="math inline">\(E(y|\mathbf{X})\)</span> puede ser egañoso. Problablemente la <span class="math inline">\(Var(y|\mathbf{X})\)</span> sería no constante o heterocedástica, debido a que la distribución de <span class="math inline">\(y\)</span> se acumula en cero; esta claro que <span class="math inline">\(y\)</span> no puede tener una distribución normal condicional. Por lo tanto, al igual que en el MPL la inferencia sólo se justifica asintóticamente.</p>
+<p>Es importante tener un modelo que implique valores predichos no negativos para <span class="math inline">\(y\)</span> y, que tenga efectos parciales sensatos sobre un amplio rango de las variables independientes. Además, algunas veces es necesario estimar las características de la distribución de <span class="math inline">\(y\)</span> dadas <span class="math inline">\(x_1,...,x_k\)</span> más alla de la expectativa condicional. El <strong>Modelo Tobit</strong> es idóneo, el cual expresa la respuesta observada, <span class="math inline">\(y\)</span>, en términos de una variable latente subyacente:</p>
+<p><span class="math display">\[y^*=\beta_0+\mathbf{x\beta}+u, u|\mathbf{x}\sim Normal(0,\sigma^2)[1]\]</span> <span class="math display">\[y=max(0,y^*)[2]\]</span></p>
+<p>La variable latente <span class="math inline">\(y^*\)</span> satisface los supuesto del modelo lineal clásico, en particular tiene:</p>
+<ul>
+<li><p>Distribución normal</p></li>
+<li><p>Homocedástica con una media condicional lineal</p></li>
+</ul>
+<p>La ecuación [2] implica que la variable observable, <span class="math inline">\(y=y^*\Leftrightarrow y^*\geq0\)</span>, caso contrario <span class="math inline">\(y=0\Leftrightarrow y^*&lt;0\)</span>. Debido a que <span class="math inline">\(y^*\)</span> se distribuye como una normal, <span class="math inline">\(y\)</span> tiene una distribución continua a través de valores estrictamente positivos. En particular, la densidad de <span class="math inline">\(y|\mathbf{X}\)</span> es la misma de <span class="math inline">\(y^*|\mathbf{X}\)</span> para valores positivos, Además:</p>
+<p><span class="math display">\[P(y=0|\mathbf{x})=P(y^*&lt;0|\mathbf{x})=P(u&lt;-\mathbf{x\beta}|\mathbf{x})=\\P(u|\sigma&lt;-\mathbf{x\beta/\sigma|x})=\Phi(\mathbf{-x\beta/\sigma})=1-\Phi(\mathbf{x\beta/\sigma}) [3]\]</span> Notar que <span class="math inline">\(u/\sigma\sim N(0,1)\)</span> y es independiente de <span class="math inline">\(\mathbf{x}\)</span>; se ha absorbido el intercepto en <span class="math inline">\(\mathbf{x}\)</span> por simplicidad notacional. Por lo tanto, si <span class="math inline">\(\mathbf{x_i},y_i\)</span> se extraen aleatoriamente de la población, la densidad de <span class="math inline">\(y_i|\mathbf{x_i}\)</span> es:</p>
+<p><span class="math display">\[(2\pi\sigma^2)^{-1/2}exp[-(y-\mathbf{x_i\beta})^2/(2\sigma^2)]=(1/\sigma)\phi[(y-\mathbf{x_i\beta})/\sigma], y&gt;0[4]\]</span></p>
+<p><span class="math display">\[P(y_i=0|y-\mathbf{x_i})=1-\Phi(\mathbf{x_i\beta/\sigma})[5]\]</span> Donde <span class="math inline">\(\phi\)</span> es la función de densidad normal estándar</p>
+<p>De las ecuaciones [4] y [5] se obtiene la función log-verosimilitud para cada observación <span class="math inline">\(i\)</span>:</p>
+<p><span class="math display">\[\mathcal{l_i(\beta,\sigma)}=1(y_i=0)log[1-\Phi(\mathbf{x_i\beta/\sigma})]+1(y_i&gt;0)log((1/\sigma)\phi[(y_i-\mathbf{x_i\beta})/\sigma]) [6]\]</span> Notese que, esto depende de <span class="math inline">\(\sigma\)</span>, la desviación estándar de <span class="math inline">\(u\)</span>, así como de las <span class="math inline">\(\beta_j\)</span>. La log-verosimilitud para una <span class="math inline">\(n\)</span> aleatoria se obtiene al sumar [6], a través de todas <span class="math inline">\(i\)</span>. Las estimaciones de máxima verosimilitud de <span class="math inline">\(\beta\)</span> y <span class="math inline">\(\sigma\)</span> se obtienen al maximizar la log-verosimilitud; esto requiere métodos numéricos, pero el software lo realiza.</p>
+<p>Para restricciones de exclusión múltiples es fácil usar la prueba de <strong>Wald</strong> o la razón de verosimilitudes.</p>
+</section>
+<section id="interpretaciones-de-las-estimaciones-tobit." class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="interpretaciones-de-las-estimaciones-tobit."><span class="header-section-number">4.3</span> Interpretaciones de las estimaciones Tobit.</h2>
+<p>Los resultados de Tobit y MCO son casi siempre similares, lo que hace tentador interpretar las <span class="math inline">\(\widehat{\beta}_j\)</span> de Tobit como si fueran estimaciones de MCO, pero se advierte que no es así de fácil.</p>
+<p>La [1] muestra que las <span class="math inline">\(\beta_j\)</span> miden efectos parciales de las <span class="math inline">\(x_j\)</span> sobre el <span class="math inline">\(E(y^*|\mathbf{x})\)</span>. La variable que se busca explicar es <span class="math inline">\(y\)</span>, pues es el resultado observado (las horas trabajadas o la cantidad donaciones)</p>
+<p>De la ecuación [5] podemos obtener <span class="math inline">\(P(y=0|\mathbf{x})\)</span>, de ahi podemos estimar <span class="math inline">\(P(y&gt;0|\mathbf{x})\)</span> ¿Qué pasa si se quiere estimar el valor esperado de <span class="math inline">\(y\)</span> en función <span class="math inline">\(\mathbf{x}\)</span>?. En los modelos Tobit, existe dos expectativas. La primera <span class="math inline">\(E(y|y&gt;0,\mathbf{x})\)</span>, que recibe el nombre de <strong>expectativa condicional</strong>. La segunda es <span class="math inline">\(E(y|\mathbf{x})\)</span>, conocida como la <strong>expectativa no condicional</strong>. La expectativa <span class="math inline">\(E(y|y&gt;0,\mathbf{x})\)</span> nos dice que, para los valores dados de <span class="math inline">\(\mathbf{x}\)</span>, el valor esperado de <span class="math inline">\(y\)</span> para la subpoblación donde <span class="math inline">\(y&gt;0\)</span>, esta expectativa se hallar con facilidades a partir <span class="math inline">\(E(y|\mathbf{x})\)</span>:</p>
+<p><span class="math display">\[E(y|\mathbf{x})=P(y&gt;0|\mathbf{x}).E(y|y&gt;0,\mathbf{x})=\Phi(\mathbf{x\beta}/\sigma).E(y|y&gt;0,\mathbf{x}) [7]\]</span> Para obtener <span class="math inline">\(E(y|y&gt;0,\mathbf{x})\)</span> se puede usar un resultado para las variables aleatorias con distribución normal: si <span class="math inline">\(z\sim Normal(0,1)\)</span> entonces <span class="math inline">\(E(z|z&gt;c)=\phi(c)/[1-\Phi(c)] \forall c\)</span> constante. Pero <span class="math inline">\(E(y|y&gt;0,\mathbf{x})=\mathbf{x\beta}+E(u|u&gt;-\mathbf{x\beta})=\\\mathbf{x\beta}+\sigma E[(u/\sigma)|(u/\sigma)&gt;-\mathbf{x\beta/\sigma}]=\\\mathbf{x\beta}+\sigma\phi_(\mathbf{x\beta}/\sigma)/\Phi(\mathbf{x\beta}/\sigma)\)</span></p>
+<p>Debido a que: <span class="math inline">\(\phi(-c)=\phi(c), 1-\Phi(c)=\Phi(c)\)</span>, <span class="math inline">\(u/\sigma\sim Normal (0,1)\)</span> independiente de <span class="math inline">\(\mathbf{x}\)</span>. Podemos reecribir a [7] así:</p>
+<p><span class="math display">\[E(y|y&gt;0,\mathbf{x})=\mathbf{x\beta}+\sigma\lambda(\mathbf{x\beta/\sigma})\]</span> Donde: <span class="math inline">\(\lambda(c)=\frac{\phi(c)}{\Phi(c)}\)</span> recibe el nombre de la <strong>razón inversa de Mills</strong></p>
+</section>
+<section id="ejemplo" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="ejemplo"><span class="header-section-number">4.4</span> Ejemplo</h2>
+<p>Estimación Tobit y MCO de las horas anuales trabajas</p>
+<p>La variables</p>
+<ul>
+<li><p>Dependiente (<span class="math inline">\(Y\)</span>) son las horas anuales trabajadas por las mujeres</p></li>
+<li><p>Variables explicativas o regresoras:</p></li>
+<li><p><span class="math inline">\(nwifeinc\)</span>: Salario de esposo en miles de dólares</p></li>
+<li><p><span class="math inline">\(educ\)</span>: años de educación</p></li>
+<li><p><span class="math inline">\(exper:\)</span> años de experiencia</p></li>
+<li><p><span class="math inline">\(exper^2\)</span>: años de experiencia al cuadrado</p></li>
+<li><p><span class="math inline">\(age:\)</span> edad de las mujeres</p></li>
+<li><p><span class="math inline">\(kidslt6\)</span>: Niños menores a seis años</p></li>
+<li><p><span class="math inline">\(kidsge6\)</span>: Niños entres 6 y 18 años</p></li>
+</ul>
+<section id="verificar-que-la-variable-dependiente-sea-de-solución-de-esquina" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="verificar-que-la-variable-dependiente-sea-de-solución-de-esquina"><span class="header-section-number">4.4.1</span> Verificar que la variable dependiente sea de solución de esquina</h3>
+<p>activación de paquetes</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(wooldridge, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               dplyr, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               ggplot2, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               stargazer,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>               censReg,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>               AER)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">data</span>(<span class="st">"mroz"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Histograma</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mroz<span class="sc">$</span>hours, <span class="at">main =</span> <span class="st">"Histograma de las horas trabajadas"</span>, <span class="at">xlab =</span> <span class="st">"Horas trabajadas"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cap2_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> mroz, <span class="fu">aes</span>(<span class="at">x=</span>hours))<span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bindwidth=</span><span class="dv">10</span>)<span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribución de las horas trabajas</span><span class="sc">\n</span><span class="st"> de las mujeres"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in geom_histogram(bindwidth = 10): Ignoring unknown parameters:
+`bindwidth`</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cap2_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>En el anterior histograma se puede observar que las mayor cantidad de obervaciones se encuentran en cero, así tenemos indicios de que la variable <span class="math inline">\(y\)</span> es de solución de esquina, pues a además, la horas trabajadas anuales se amplían hasta 5000 al año. Para saber la proporcion de ceros que tiene la variable dependiente dicotomizamos dicha variables</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transformación de la variable en binaria</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mroz<span class="sc">$</span>dico.hours <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(mroz<span class="sc">$</span>hours<span class="sc">==</span><span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculando el porcentaje de ceros en Y</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(mroz<span class="sc">$</span>dico.hours))<span class="sc">*</span><span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+       0        1 
+43.16069 56.83931 </code></pre>
+</div>
+</div>
+</section>
+<section id="usando-mco" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="usando-mco"><span class="header-section-number">4.4.2</span> Usando MCO</h3>
+<p>Vamos a determinar las horas trabajadas al año por la mujeres, usando MCO</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model.mco<span class="ot">&lt;-</span><span class="fu">lm</span>(hours<span class="sc">~</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                nwifeinc<span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                 educ<span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                 exper<span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                 expersq<span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                 age<span class="sc">+</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                 kidslt6<span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                 kidsge6,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>mroz)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(model.mco,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">"text"</span>, </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>          <span class="at">dep.var.labels =</span> <span class="st">"Horas al año trabajadas"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                      Horas al año trabajadas  
+-----------------------------------------------
+nwifeinc                      -3.447           
+                              (2.544)          
+                                               
+educ                         28.761**          
+                             (12.955)          
+                                               
+exper                        65.673***         
+                              (9.963)          
+                                               
+expersq                      -0.700**          
+                              (0.325)          
+                                               
+age                         -30.512***         
+                              (4.364)          
+                                               
+kidslt6                     -442.090***        
+                             (58.847)          
+                                               
+kidsge6                       -32.779          
+                             (23.176)          
+                                               
+Constant                   1,330.482***        
+                             (270.785)         
+                                               
+-----------------------------------------------
+Observations                    753            
+R2                             0.266           
+Adjusted R2                    0.259           
+Residual Std. Error     750.179 (df = 745)     
+F Statistic           38.495*** (df = 7; 745)  
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Si la variable "y" ajustada tiene valores menores que cero, significa que no es un buen ajuste</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model.mco<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ -719.8   417.5   737.7   740.6  1093.1  1614.7 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mroz<span class="sc">$</span>hours)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    0.0     0.0   288.0   740.6  1516.0  4950.0 </code></pre>
+</div>
+</div>
+<p>Como me arroja valores negativos ajustados, significa que el MCO no esta ajustando de forma adecuada a la variable <span class="math inline">\(y\)</span> de solución de esquina. Además, el efecto es constante. Esto me siguiere que se debe usar un modelo Tobit para ajustar una variable de solución de esquina.</p>
+</section>
+<section id="modelo-tobit" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="modelo-tobit"><span class="header-section-number">4.4.3</span> Modelo Tobit</h3>
+<p>Por lo antes mencionado, ajustamos a la variable <em>hours</em> con un modelo <strong>Tobit</strong></p>
+<p>Verificar el cumpliendo de la variable <em>hours</em> para usar un modelo Tobit.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Porcentaje de ceros en la variable hours</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>mroz<span class="sc">$</span>dico <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(mroz<span class="sc">$</span>hours<span class="sc">==</span><span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(mroz<span class="sc">$</span>dico))<span class="sc">*</span><span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+       0        1 
+43.16069 56.83931 </code></pre>
+</div>
+</div>
+<p>En este ejemplo aproximadamente el 43% de los datos de <em>hours</em> son cero y el resto datos aproximadamente continuos</p>
+<p>Procedemos a ajustar un modelo Tobit</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>modelo.tobit <span class="ot">&lt;-</span> <span class="fu">censReg</span>(hours<span class="sc">~</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                nwifeinc<span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                 educ<span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                 exper<span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                 expersq<span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                 age<span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                 kidslt6<span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>                 kidsge6,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>mroz,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">left =</span> <span class="dv">0</span>)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>modelo.tobit2 <span class="ot">&lt;-</span> <span class="fu">tobit</span>(hours<span class="sc">~</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                nwifeinc<span class="sc">+</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                 educ<span class="sc">+</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                 exper<span class="sc">+</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>                 expersq<span class="sc">+</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                 age<span class="sc">+</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>                 kidslt6<span class="sc">+</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>                 kidsge6,</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>mroz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Una vez, ejecutadas las dos regresiones (MCO y Tobit) las ponemos a comparación, de tal forma que, se replique la <strong>Tabla 17.2B</strong> del libro de Wooldridge (2010)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(model.mco, </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>          modelo.tobit, </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>          modelo.tobit2 ,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">digits =</span> <span class="dv">2</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">df=</span>F,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Estimación Tobit y MCO de las horas anuales trabajas"</span>,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">dep.var.labels =</span> <span class="st">"Variable dependiente: horas anuales trabajadas"</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">header =</span> F,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>          <span class="at">column.labels =</span> <span class="fu">c</span>(<span class="st">"MCO"</span>, <span class="st">"Tobit"</span>, <span class="st">"Tobit2"</span>),</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">model.names =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Estimación Tobit y MCO de las horas anuales trabajas
+====================================================================
+                                  Dependent variable:               
+                    ------------------------------------------------
+                     Variable dependiente: horas anuales trabajadas 
+                          MCO             Tobit          Tobit2     
+                          (1)              (2)             (3)      
+--------------------------------------------------------------------
+nwifeinc                 -3.45           -8.81**         -8.81**    
+                         (2.54)          (4.46)          (4.46)     
+                                                                    
+educ                    28.76**         80.65***        80.65***    
+                        (12.95)          (21.58)         (21.58)    
+                                                                    
+exper                   65.67***        131.56***       131.56***   
+                         (9.96)          (17.28)         (17.28)    
+                                                                    
+expersq                 -0.70**         -1.86***        -1.86***    
+                         (0.32)          (0.54)          (0.54)     
+                                                                    
+age                    -30.51***        -54.41***       -54.41***   
+                         (4.36)          (7.42)          (7.42)     
+                                                                    
+kidslt6                -442.09***      -894.02***      -894.02***   
+                        (58.85)         (111.88)        (111.88)    
+                                                                    
+kidsge6                  -32.78          -16.22          -16.22     
+                        (23.18)          (38.64)         (38.64)    
+                                                                    
+logSigma                                 7.02***                    
+                                         (0.04)                     
+                                                                    
+Constant              1,330.48***       965.31**        965.31**    
+                        (270.78)        (446.44)        (446.44)    
+                                                                    
+--------------------------------------------------------------------
+Observations              753              753             753      
+R2                        0.27                                      
+Adjusted R2               0.26                                      
+Log Likelihood                          -3,819.09       -3,819.09   
+Akaike Inf. Crit.                       7,656.19                    
+Bayesian Inf. Crit.                     7,697.81                    
+Residual Std. Error      750.18                                     
+F Statistic             38.50***                                    
+Wald Test                                               253.86***   
+====================================================================
+Note:                                    *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>Si quiero hacer comparables las estimaciones Tobit con MCO se debe multiplicar por el factor de ajuste. El factor escalar <strong>EPP</strong> <span class="math inline">\(n^{-1}\Sigma_{i=1}^n\Phi(\mathbf{x_i\hat{\beta}}/\hat{\sigma})\)</span> resulta que es aproximadamente de 0.589. Por ejemplo, <em>educ</em> por 0.589 se obtiene <span class="math inline">\(0.589(80.65)\approx47.50\)</span>, por lo tanto, si una mujer aumenta un año a su educación, en promedio se sumara 47.5 horas de trabajo, esto es mayor al MCO, que es de 28.76. Se podría usar otro escalar a partir de los valores promedio de todas las variables explicativas, entonces se calcula el <em>EPA</em> <span class="math inline">\(\Phi(\mathbf{\bar{x}_i\hat{\beta}}/\hat{\sigma})\)</span>, es aproximadamente 0.645</p>
+<section id="efecto-marginal" class="level4" data-number="4.4.3.1">
+<h4 data-number="4.4.3.1" class="anchored" data-anchor-id="efecto-marginal"><span class="header-section-number">4.4.3.1</span> Efecto marginal</h4>
+<p>A continuación, uso el comando <em>margEff()</em> para encontrar los efectos marginales de la estimación Tobit</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">margEff</span>(modelo.tobit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Marg. Eff. Std. Error t value  Pr(&gt;|t|)    
+nwifeinc   -5.32644    2.69073 -1.9796 0.0481217 *  
+educ       48.73409   12.96341  3.7594 0.0001837 ***
+exper      79.50423   10.30497  7.7151 3.886e-14 ***
+expersq    -1.12651    0.32326 -3.4848 0.0005213 ***
+age       -32.87692    4.45770 -7.3753 4.383e-13 ***
+kidslt6  -540.25683   66.62393 -8.1091 2.220e-15 ***
+kidsge6    -9.80053   23.36134 -0.4195 0.6749580    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p><strong>Interpretaciones</strong></p>
+<ul>
+<li>Si el salario del esposo aumenta en 1000 dólares al año, las horas de trabajo de la mujer disminuyen en 5.32 horas. El mayor efecto, que es altamente significativo, sigue siendo el aumento de niños pequeños, pues en promedio, si se aumenta un infante menor a seis años las horas de trabajo decrecen en 540 horas al año.</li>
+</ul>
+</section>
+</section>
+<section id="no-linealidad-del-modelo-tobit" class="level3" data-number="4.4.4">
+<h3 data-number="4.4.4" class="anchored" data-anchor-id="no-linealidad-del-modelo-tobit"><span class="header-section-number">4.4.4</span> No linealidad del modelo Tobit</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mod.stobit <span class="ot">&lt;-</span> <span class="fu">censReg</span>(hours<span class="sc">~</span>kidslt6 , </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">left =</span> <span class="dv">0</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data=</span>mroz)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>mod.Smco <span class="ot">&lt;-</span> <span class="fu">lm</span>(hours<span class="sc">~</span>kidslt6, </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>mroz)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(mod.stobit, <span class="at">type =</span> <span class="st">"text"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                               hours           
+-----------------------------------------------
+kidslt6                     -774.751***        
+                             (116.086)         
+                                               
+logSigma                     7.191***          
+                              (0.038)          
+                                               
+Constant                    489.522***         
+                             (59.105)          
+                                               
+-----------------------------------------------
+Observations                    753            
+Log Likelihood              -3,930.753         
+Akaike Inf. Crit.            7,867.505         
+Bayesian Inf. Crit.          7,881.377         
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Añadiendo la curva de regresión Tobit</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">4</span>, <span class="fl">0.5</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">pnorm</span>((<span class="fu">coef</span>(mod.stobit)[<span class="dv">1</span>]<span class="sc">+</span><span class="fu">coef</span>(mod.stobit)[<span class="dv">2</span>]<span class="sc">*</span>x)<span class="sc">/</span><span class="fu">exp</span>(<span class="fu">coef</span>(mod.stobit)[<span class="dv">3</span>]))<span class="sc">*</span>(<span class="fu">coef</span>(mod.stobit)[<span class="dv">1</span>]<span class="sc">+</span><span class="fu">coef</span>(mod.stobit)[<span class="dv">2</span>]<span class="sc">*</span>x)<span class="sc">+</span><span class="fu">exp</span>(<span class="fu">coef</span>(mod.stobit)[<span class="dv">3</span>])<span class="sc">*</span><span class="fu">dnorm</span>((<span class="fu">coef</span>(mod.stobit)[<span class="dv">1</span>]<span class="sc">+</span><span class="fu">coef</span>(mod.stobit)[<span class="dv">2</span>]<span class="sc">*</span>x)<span class="sc">/</span><span class="fu">exp</span>(<span class="fu">coef</span>(mod.stobit)[<span class="dv">3</span>]))</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>x,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">y=</span>y,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Niños menores a seis años"</span>,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"Horas trabajadas al año"</span>,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">col=</span><span class="st">"steelblue"</span>,</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">"Modelo Tobit para la relación niños pequeños y horas trabajadas de una mujer"</span>, </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">type=</span><span class="st">"l"</span>)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(mod.Smco, <span class="at">col=</span><span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cap2_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>En el gráfico anterior podemos observar que añadir un niño menor a seis años hace que se reduzca las horas dedicadas al trabajo. Sin embargo, en la linea azul del modelo Tobit la reducción de horas es decreciente a medida que se tiene más hijos pequeños, en el MCO (linea de color rojo), la reducción de las horas trabajadas es la misma con el aparecimiento de menor a seis años. Es decir, no importa si pasas de cero hijo a a uno hijo o de 3 a 4, la reducción de las horas trabajadas es la misma. No esta tomando en cuenta el aprendizaje de la madre con cada nuevo hijo.</p>
+<section id="evaluación-informal-del-modelo-tobit-problemas-de-especificación" class="level4" data-number="4.4.4.1">
+<h4 data-number="4.4.4.1" class="anchored" data-anchor-id="evaluación-informal-del-modelo-tobit-problemas-de-especificación"><span class="header-section-number">4.4.4.1</span> Evaluación informal del modelo Tobit [Problemas de especificación]</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>probit.tobit <span class="ot">&lt;-</span><span class="fu">glm</span>(dico.hours<span class="sc">~</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                nwifeinc<span class="sc">+</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                 educ<span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                 exper<span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                 expersq<span class="sc">+</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>                 age<span class="sc">+</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                 kidslt6<span class="sc">+</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>                 kidsge6,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>mroz,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"probit"</span>)) </span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(probit.tobit,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Estimación Tobit y MCO de las horas anuales trabajas"</span>,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>          <span class="at">dep.var.labels =</span> <span class="st">"Variable dependiente: horas anuales trabajadas 0 y 1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Estimación Tobit y MCO de las horas anuales trabajas
+======================================================================
+                                  Dependent variable:                 
+                  ----------------------------------------------------
+                  Variable dependiente: horas anuales trabajadas 0 y 1
+----------------------------------------------------------------------
+nwifeinc                                -0.012**                      
+                                        (0.005)                       
+                                                                      
+educ                                    0.131***                      
+                                        (0.025)                       
+                                                                      
+exper                                   0.123***                      
+                                        (0.019)                       
+                                                                      
+expersq                                -0.002***                      
+                                        (0.001)                       
+                                                                      
+age                                    -0.053***                      
+                                        (0.008)                       
+                                                                      
+kidslt6                                -0.868***                      
+                                        (0.118)                       
+                                                                      
+kidsge6                                  0.036                        
+                                        (0.044)                       
+                                                                      
+Constant                                 0.270                        
+                                        (0.508)                       
+                                                                      
+----------------------------------------------------------------------
+Observations                              753                         
+Log Likelihood                          -401.302                      
+Akaike Inf. Crit.                       818.604                       
+======================================================================
+Note:                                      *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>Luego procedemos a usar los coeficientes para la comparación entre el modelo Probit y el Tobit, el objetivo es evaluar la validez del modelo Tobit.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">coef</span>(probit.tobit)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">coef</span>(modelo.tobit)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>comparacion <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(z, (m[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>])<span class="sc">/</span><span class="fu">exp</span>(m[<span class="dv">9</span>]), z<span class="sc">-</span>(m[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>])<span class="sc">/</span><span class="fu">exp</span>(m[<span class="dv">9</span>]))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(comparacion) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"probit"</span>, <span class="st">"beta/sigma"</span>, <span class="st">"diferencia"</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>comparacion</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  probit   beta/sigma   diferencia
+(Intercept)  0.270073573  0.860326776 -0.590253203
+nwifeinc    -0.012023637 -0.007855680 -0.004167957
+educ         0.130903969  0.071875266  0.059028703
+exper        0.123347168  0.117256469  0.006090698
+expersq     -0.001887067 -0.001661427 -0.000225640
+age         -0.052852442 -0.048488379 -0.004364063
+kidslt6     -0.868324680 -0.796795431 -0.071529248
+kidsge6      0.036005611 -0.014454263  0.050459873</code></pre>
+</div>
+</div>
+<p>Tobit de <em>nwifeinc</em> entre <span class="math inline">\(\widehat{\sigma}=1122.02\)</span>, se obtuvo <span class="math inline">\(-8.81/1122.02=-0.0079\)</span>; el coeficiente probit de <em>nwifein</em> es de cerca de <span class="math inline">\(-0.012\)</span>, lo cual es diferente, pero no de forma drástica. En <em>kidslt6</em>, el coeficiente estimado entre <span class="math inline">\(\widehat{\sigma}\)</span> es de cerca de <span class="math inline">\(-0.797\)</span>, en comparación con la estimación probit de <span class="math inline">\(-0.868\)</span>. De nuevo, ésta no es una diferencia enorme, pero indica que tener niños pequeños tiene un efecto mayor sobre la decisión inicial de participar en la fuerza laboral que sobre cuántas horas elige trabajar una mujer una vez que está en dicha fuerza. (Tobit promedia de forma efectiva estos dos efectos.) No se sabe si los efectos son estadísticamente diferentes, pero son del mismo orden de magnitud.</p>
+<p>Por lo tanto, se podría decir que el modelo Tobit es adecuado, parar ajustar a la variable <em>hours</em></p>
+<p>¿Qué sucede si se concluye que el modelo Tobit es inadecuado? Existen modelos, que suelen conocerse como modelos de <strong>dos partes</strong> o <strong>de obstáculos</strong>, que se pueden usar cuando Tobit es inadecuado</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cap1.html" class="pagination-link" aria-label="Variable dependiente binaria">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Variable dependiente binaria</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./cap3.html" class="pagination-link" aria-label="Modelo Poisson">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Modelo Poisson</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
