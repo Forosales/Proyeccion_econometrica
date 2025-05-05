@@ -283,9 +283,9 @@ crime1 %>%
 
 $$
 \begin{aligned}
-E[narr86|\mathbf{x}]=exp\left(\beta_0+\beta_1pcnv+\beta_2avgsen+\beta_3tottime\\
-+\beta_4ptime86+\beta_5qemp86+\beta_6ince86+\\
-+\delta_1black+\delta_2hispan+\delta_3born\right)
+E[\text{narr86} \mid \mathbf{x}] = \exp\Big(& \beta_0 + \beta_1 \text{pcnv} + \beta_2 \text{avgsen} + \beta_3 \text{tottime} \\
+&+ \beta_4 \text{ptime86} + \beta_5 \text{qemp86} + \beta_6 \text{ince86} \\
+&+ \delta_1 \text{black} + \delta_2 \text{hispan} + \delta_3 \text{born} \Big)
 \end{aligned}
 $$
 
